@@ -1,0 +1,352 @@
+1. docker run [OPTS] image [COMMAND] [ARGS]  (Starts up a process from a new container)
+	e.g. docker run -i -t fedora_sshman
+2. docker inspect --format (View container information
+          Pid (view process ID of running container)
+          IPAddress (View IPAddress of running container) 
+3. docker ps (List running containers)
+  e.g. docker ps -l -a 
+	CONTAINER ID   IMAGE  COMMAND CREATED STATUS PORTS  NAMES 
+4. docker start (restart a stopped container)
+5. docker stop ( Stop a rinning container)
+6. docker restart (stop and restart running container)
+7. docker kill (Send kill (or other signal) to active container)
+8. docker commit -m="ssh man on fedora base" -a"Chris Negus" 3cab3d1a591d fedora_sshman
+9. docker images
+10. docker save -o my_fedora_sshman.tar fedora_sshman  (private docker hub)
+11. docker push localhost:5000/chris/fedora-sshman:2.0
+    docker push cnegus/fedora_sshman (commit an image to a regisrty)(public)
+
+Monitor docker system:
+----------------------
+1. rpm -q pkg or dpkg -query --show pkg (Get information about docker)
+
+Remove containers and images:
+-----------------------------
+
+Building docker images:
+-----------------------
+  -dockerfile file (Instructions in dockerfile)
+      . FROM: Identifies the base image(must be first instruction)
+      . MAINTAINER: Identifies author in Author field for the image.
+
+General Rules for Building Containers:
+--------------------------------------
+  - use root privilege to build containers, non-root user to run
+  - Choose standard base images
+  - Pull specific tag when pulling an image to:
+
+Orchestrating Docker Containers:
+--------------------------------
+	- Orchestrate Docker container pods with Kubernetes
+	- Orchestrate multi-node containers with Kubernetes
+	- Manage containers with cockpit		
+     
+
+Docker command run during training:
+-----------------------------------
+[From project folder]
+1. docker build -t kapilshekharraina/cloudconfigserver:1 .
+2. docker build -t kapilshekharraina/eurekaservermarch:1 .
+3. docker run -d -p 8888:8888 -p 8889:8889 --name configserver kapilshekharraina/eurekamarch:1
+4. docker run -d -p 8888:8888 -p 8889:8889 --name kapilshekharraina/cloudconfigservermarch:1
+5. docker ps
+6. docker ps -a
+7. docker logs 507299ae4d35
+8. docker build -t kapilshekharraina/cloudconfigservermarch:1 .
+9. docker run -d -p 8888:8888 -p 8889:8889 --name configserver kapilshekharraina/cloudconfigservermarch:1
+10. docker ps
+11. docker logs cefad170a891 -f
+
+---day-4
+1. docker build --help
+2. docker-machine ls
+tcp://192.168.99.100:2376
+tcp://192.168.99.101:2376
+
+3. docker-machine env docker-vm1
+SET DOCKER_TLS_VERIFY=1
+SET DOCKER_HOST=tcp://192.168.99.100:2376
+SET DOCKER_CERT_PATH=C:\Users\w2mservices220\.docker\machine\machines\docker-vm1
+SET DOCKER_MACHINE_NAME=docker-vm1
+SET COMPOSE_CONVERT_WINDOWS_PATHS=true
+REM Run this command to configure your shell:
+REM     @FOR /f "tokens=*" %i IN ('docker-machine env docker-vm1') DO @%i
+
+4. echo %DOCKER_HOST%
+tcp://192.168.99.100:2376
+
+5. docker-machine -version
+docker-machine version 0.14.0, build 89b8332
+
+6. docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+7. docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+
+8. docker pull nginx
+Using default tag: latest
+latest: Pulling from library/nginx
+54fec2fa59d0: Pull complete
+4ede6f09aefe: Pull complete
+f9dc69acb465: Pull complete
+Digest: sha256:86ae264c3f4acb99b2dee4d0098c40cb8c46dcf9e1148f05d3a51c4df6758c12
+Status: Downloaded newer image for nginx:latest
+
+8a. docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nginx               latest              602e111c06b6        2 weeks ago         127MB
+
+9. docker container stop 7f195d001fe9
+10. docker-machine create --driver virtualbox --virtualbox-memory "1024" docker-vm1
+    (c:\work\ksr\mschasis\docker>)
+	
+	docker-machine create --driver virtualbox --virtualbox-memory "1024" docker-vbvm
+	Running pre-create checks...
+Creating machine...
+(docker-vbvm) Copying C:\Users\w2mservices220\.docker\machine\cache\boot2docker.iso to C:\Users\w2mservices220\.docker\machine\machines\docker-vbvm\boot2docker.iso...
+(docker-vbvm) Creating VirtualBox VM...
+(docker-vbvm) Creating SSH key...
+(docker-vbvm) Starting the VM...
+(docker-vbvm) Check network to re-create if needed...
+(docker-vbvm) Windows might ask for the permission to configure a dhcp server. Sometimes, such confirmation window is minimized in the taskbar.
+(docker-vbvm) Waiting for an IP...
+Waiting for machine to be running, this may take a few minutes...
+Detecting operating system of created instance...
+Waiting for SSH to be available...
+Detecting the provisioner...
+Provisioning with boot2docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env docker-vbvm
+
+	
+10a. docker-machine ls
+NAME          ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER     ERRORS
+docker-vbvm   -        virtualbox   Running   tcp://192.168.99.102:2376           v19.03.5
+docker-vm1    *        virtualbox   Running   tcp://192.168.99.100:2376           v19.03.5
+docker-vm2    -        virtualbox   Saved                                         Unknown
+
+10b. docker-machine stop docker-vbvm
+Stopping "docker-vbvm"...
+Machine "docker-vbvm" was stopped.
+
+10c. docker-machine ls
+NAME          ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER     ERRORS
+docker-vbvm   -        virtualbox   Stopped                                       Unknown
+docker-vm1    *        virtualbox   Running   tcp://192.168.99.100:2376           v19.03.5
+docker-vm2    -        virtualbox   Saved                                         Unknown
+
+11. docker image --help
+Usage:  docker image COMMAND
+
+Manage images
+
+Options:
+
+
+Commands:
+  build       Build an image from a Dockerfile
+  history     Show the history of an image
+  import      Import the contents from a tarball to create a filesystem image
+  inspect     Display detailed information on one or more images
+  load        Load an image from a tar archive or STDIN
+  ls          List images
+  prune       Remove unused images
+  pull        Pull an image or a repository from a registry
+  push        Push an image or a repository to a registry
+  rm          Remove one or more images
+  save        Save one or more images to a tar archive (streamed to STDOUT by default)
+  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+
+Run 'docker image COMMAND --help' for more information on a command.
+
+12. docker build -t abhay/eurekaserver:1 .
+	Sending build context to Docker daemon  118.3kB
+	Step 1/4 : FROM fabric8/java-alpine-openjdk8-jdk
+	latest: Pulling from fabric8/java-alpine-openjdk8-jdk
+	cbdbe7a5bc2a: Pull complete
+	7e0ab2252acf: Pull complete
+	b629b7eb0628: Pull complete
+	34689b25dde5: Pull complete
+	be65139ff82d: Pull complete
+	2f4e114b8601: Pull complete
+	a1af60b16cdb: Pull complete
+	ef398f54ac99: Pull complete
+	Digest: sha256:27d17ebd9447a33bd073a03d914cc608c85e94875962c4a815df8e87eab910a2
+	Status: Downloaded newer image for fabric8/java-alpine-openjdk8-jdk:latest
+	 ---> 2b7844efe720
+	Step 2/4 : ADD target/*.jar app.jar
+	ADD failed: no source files were specified
+
+	---SUCCESS---
+	Sending build context to Docker daemon  49.65MB
+	Step 1/4 : FROM fabric8/java-alpine-openjdk8-jdk
+	 ---> 2b7844efe720
+	Step 2/4 : ADD target/*.jar app.jar
+	 ---> 17162fa40eb7
+	Step 3/4 : RUN touch /app.jar
+	 ---> Running in 8ecd7c20129a
+	Removing intermediate container 8ecd7c20129a
+	 ---> 66914bdfb4fb
+	Step 4/4 : ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+	 ---> Running in 02d78b1ccedf
+	Removing intermediate container 02d78b1ccedf
+	 ---> 532ade91b1a0
+	Successfully built 532ade91b1a0
+	Successfully tagged abhay/eurekaserver:1
+	SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
+
+13. docker images
+REPOSITORY                         TAG                 IMAGE ID            CREATED             SIZE
+abhay/eurekaserver                 1                   532ade91b1a0        46 seconds ago      207MB
+fabric8/java-alpine-openjdk8-jdk   latest              2b7844efe720        11 days ago         108MB
+nginx                              latest              602e111c06b6        2 weeks ago         127MB
+
+14. docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+15. docker run -d -p 8888:8888 -p 8889:8889 --name abhay/eurekaserver:1
+"docker run" requires at least 1 argument.
+See 'docker run --help'.
+
+Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...] [flags]
+
+Run a command in a new container
+
+15a. docker run -d -p 8888:8888 -p 8889:8889 --name eurekaserver abhay/eurekaserver:1
+---SUCCESS---
+7f7fc1db8eb59a213a591632966f8b322427f8598ba9fff8ae3a1a3c4e3e8e6f
+
+15c. docker ps
+CONTAINER ID        IMAGE                  COMMAND                  CREATED                  STATUS              PORTS                                                  NAMES
+7f7fc1db8eb5        abhay/eurekaserver:1   "java -Djava.securit"   Less than a second ago   Up 43 seconds       8778/tcp, 9779/tcp, 0.0.0.0:8888-8889->8888-8889/tcp   eurekaserver
+
+16. docker rm 7f7fc1db8eb5
+-------------
+%DOCKER_HOST% = tcp://192.168.99.100:2376
+http://192.168.99.100:8761/
+http://localhost:8761/
+
+16. docker run -d -p 9411:9411 openzipkin/zipkin
+	Unable to find image 'openzipkin/zipkin:latest' locally
+	latest: Pulling from openzipkin/zipkin
+	24f0c933cbef: Pull complete
+	69e2f037cdb3: Pull complete
+	1a3f070d750b: Pull complete
+	3e010093287c: Pull complete
+	7df9dcce0a60: Pull complete
+	824016db13c8: Pull complete
+	fd2668db6e0d: Pull complete
+	6453a70a5672: Pull complete
+	71ee7774b52d: Pull complete
+	f501de85fd87: Pull complete
+	88f9ce9874c2: Pull complete
+	dc220d946a3e: Pull complete
+	Digest: sha256:20f0889f5a016a0dda63f567fc7d0727cde8ead29ea429e48366c3ba2cd8a075
+	Status: Downloaded newer image for openzipkin/zipkin:latest
+	9d5e207486c937abc71c8a2c01c9047a8c3e9adb7f7c9924f7e6ab4da614c01b
+	
+---http://192.168.99.100:9411/	
+
+17. cd C:\Users\w2mservices220\Downloads\Microservice_Assignment-master\Assignment_activity-1\ManageCurrencyMs
+	docker build -t abhay/managecurrencyms:2 .
+	
+		Sending build context to Docker daemon  68.76MB
+		Step 1/5 : FROM fabric8/java-alpine-openjdk8-jdk
+		 ---> 2b7844efe720
+		Step 2/5 : ADD target/*.jar managecurrms.jar
+		 ---> 185fac809514
+		Step 3/5 : RUN touch /managecurrms.jar
+		 ---> Running in 640e722f7c4f
+		Removing intermediate container 640e722f7c4f
+		 ---> 5a84c58e5242
+		Step 4/5 : EXPOSE 9001
+		 ---> Running in 7220208ab573
+		Removing intermediate container 7220208ab573
+		 ---> 43180926dc08
+		Step 5/5 : ENTRYPOINT ["java","-jar","/managecurrms.jar"]
+		 ---> Running in 96a8af9523af
+		Removing intermediate container 96a8af9523af
+		 ---> fe1c7d768545
+		Successfully built fe1c7d768545
+		Successfully tagged abhay/managecurrencyms:2
+		SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
+		
+18. docker run -d -p 9001:9001 --name managecurrencyms abhay/managecurrencyms:2	
+		76b5122e3127b1bb20ff8b082b7787eda35587c7edb907bc205193ffb3383193
+		
+19. cd C:\Users\w2mservices220\Downloads\Microservice_Assignment-master\Assignment_activity-1\ConvertCurrencyMs
+		docker build -t abhay/convertcurrencyms:3 .
+		
+			Sending build context to Docker daemon   57.2MB
+			Step 1/5 : FROM fabric8/java-alpine-openjdk8-jdk
+			 ---> 2b7844efe720
+			Step 2/5 : ADD target/*.jar convertcurrms.jar
+			 ---> 8c94a6f6e03c
+			Step 3/5 : RUN touch /convertcurrms.jar
+			 ---> Running in ca8521b98137
+			Removing intermediate container ca8521b98137
+			 ---> 635f31e7ef62
+			Step 4/5 : EXPOSE 9002
+			 ---> Running in 6d9b53856d58
+			Removing intermediate container 6d9b53856d58
+			 ---> 9ca203bb184e
+			Step 5/5 : ENTRYPOINT ["java","-jar","/convertcurrms.jar"]
+			 ---> Running in 46dd971dedd6
+			Removing intermediate container 46dd971dedd6
+			 ---> d0cb569a3b97
+			Successfully built d0cb569a3b97
+			Successfully tagged abhay/convertcurrencyms:3
+			SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories
+			
+20. docker run -d -p 9002:9002 --name convertcurrencyms abhay/convertcurrencyms:3	
+			846efad5c1cfe6c8c92b0e7c527fbbc0081b45570d2f3d2f93a6fc300e1e6a3e
+			
+-----
+http://192.168.99.100:9001/swagger-ui.html		
+http://192.168.99.100:9002/swagger-ui.html		
+					
+-----					
+
+
+
+
+cd C:\Users\w2mservices220\Downloads\Microservice_Assignment-master\Assignment_activity-1\eurekaserver
+docker build -t abhay/eurekaserver:1 .
+docker run -d -p 8888:8888 -p 8889:8889 --name eurekaserver abhay/eurekaserver:1
+docker run -d -p 8761:8761 1  -- Failed
+docker run -d -p 8761:8761 --name eurekaserver abhay/eurekaserver:1
+
+cd C:\Users\w2mservices220\Downloads\Microservice_Assignment-master\Assignment_activity-1\ManageCurrencyMs
+docker build -t abhay/managecurrms:2 .
+docker run -d -p 9001:9001 --name managecurrms abhay/managecurrms:2	
+
+cd C:\Users\w2mservices220\Downloads\Microservice_Assignment-master\Assignment_activity-1\ConvertCurrencyMs
+docker build -t abhay/convertcurrms:3 .
+docker run -d -p 9002:9002 --name convertcurrms abhay/convertcurrms:3
+
+docker ps -a
+docker images
+docker stop 
+docker rm
+docker rmi 
+docker image rm -f c67f66d3b73b
+
+
+
+Kubernetes:
+1. D:\SW\kafka_2.11-2.3.0\kafka_2.11-2.3.0\bin\windows>kubect1 get pods
+2. kubect1 delete deployment apigateway
+3. kubect1 delete deployment apigateway cloudconfigserver-74db56c5b8-kp425 discountms-7f9ff897d8 eureka-1-67d6f4d7fb-wxmtn
+4. kubect1 port-forward svc/kafka1 9094:9094
+5. kubect1 get deployments
+6. kubect1 get pods
+7. kubect1 delete deployment apigateway
+8. kubect1 delete deployment apigateway cloudconfigserver-74db56c5b8-kp425 discountms-7f9ff897d8 eureka-1-67d6f4d7fb-wxmtn prodctms-ewyweiwrir2431 webauditms-32rfjewe98fe9
+9. docker pull --help [C:\work\ksr\mschasis\docker>]
+10. docker images
+11. startchasis.bat services

@@ -1,0 +1,245 @@
+https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-interactive/
+
+Create Cluster:
+1. minikube version
+2. minikube start
+3. kubectl version
+4. kubectl cluster-info
+5. kubectl get nodes
+
+Deplying an app:
+1. kubectl version
+2. kubectl get nodes
+3. kubectl create deployment kubernetes-bootcamp --image=gcr.io/google-samples/kubetnetes-bootcamp:v1
+
+Viewing Pods and Nodes:
+
+    kubectl get - list resources
+    kubectl describe - show detailed information about a resource
+    kubectl logs - print the logs from a container in a pod
+    kubectl exec - execute a command on a container in a pod
+
+1. kubectl get pods  - look for existing Pods.
+2. kubectl describe pods  -  to view what containers are inside that Pod and what images are used to build those containers.details about the Pod’s container: IP address, the ports used and a list of events related to the lifecycle of the Pod.
+
+Show the app in the terminal:
+
+1. echo -e "\n\n\n\e[92mStarting Proxy. After starting it will not output a response. Please click the first Terminal Tab\n"; kubectl proxy
+ 
+  - kubectl proxy command to run a proxy in a second terminal window.
+
+2. export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+echo Name of the Pod: $POD_NAME
+
+  - To get the Pod name and store it in the POD_NAME environment variable.
+
+3. To see the output of our application, run a curl request:
+ 
+   curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME/proxy/
+ 
+ Step 3 View the container logs
+
+ 1. kubectl logs $POD_NAME
+
+ Step 4 Executing command on the container
+
+ 1. kubectl exec $POD_NAME env
+	- To list the environment variables.
+
+ 2. kubectl exec -ti $POD_NAME bash
+	- to start a bash session in the Pod’s container.
+
+3. cat server.js
+	- We have now an open console on the container where we run our NodeJS application. The source code of the app is in the server.js file.
+
+4. curl localhost:8080
+	- You can check that the application is up by running a curl command.
+
+5. exit
+	- To close your container connection type.
+
+
+Expose app Publicly:
+
+Step 1 Create a new service
+
+1. kubectl get pods
+2. kubectl get services
+	- to  list the current Services from our cluster.
+
+3. kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+	-  a Service called kubernetes that is created by default when minikube starts the cluster. To create a new service and expose it to external traffic we’ll use the expose command with NodePort as parameter (minikube does not support the LoadBalancer option yet).
+
+4. kubectl get services
+   NAME   TYPE    CLUSTER-IP  EXTERNAL-IP PORT(s)  AGE
+	- now a running Service called kubernetes-bootcamp. Here we see that the Service received a unique cluster-IP, an internal port and an external-IP (the IP of the Node).
+
+5. kubectl describe services/kubernetes-bootcamp
+	- To find out what port was opened externally (by the NodePort option) we’ll run the describe service command.
+
+6. curl $(minikube ip):$NODE_PORT
+	-Now we can test that the app is exposed outside of the cluster using curl, the IP of the Node and the externally exposed port.
+	 e.g. $curl 172.18.0.2:8080
+
+Step 2: Using labels
+
+1. kubectl describe deployment
+	- The Deployment created automatically a label for our Pod. With describe deployment command you can see the name of the label.
+
+2. kubectl get pods -l run=kubernetes-bootcamp
+	- this label to query our list of Pods. We’ll use the kubectl get pods command with -l as a parameter, followed by the label values.
+
+3. kubectl get services -l run=kubernetes-bootcamp
+	- do the same to list the existing services
+
+4. export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+echo Name of the Pod: $POD_NAME
+
+	- Get the name of the Pod and store it in the POD_NAME environment variable.
+
+5. kubectl label pod $POD_NAME app=v1
+	- To apply a new label we use the label command followed by the object type, object name and the new label.This will apply a new label to our Pod (we pinned the application version to the Pod).
+
+6. kubectl describe pods $POD_NAME
+	- can check it with the describe pod command.
+
+7. kubectl get pods -l app=v1
+	- we can query now the list of pods using the new label
+
+
+Step 3 Deleting a service
+
+1. kubectl delete service -l run=kubernetes-bootcamp
+	- To delete Services you can use the delete service command. Labels can be used also here.
+
+2. kubectl get services
+	- Confirm that the service is gone.
+
+3. curl $(minikube ip):$NODE_PORT
+	- To confirm that route is not exposed anymore you can curl the previously exposed IP and port.This proves that the app is not reachable anymore from outside of the cluster.
+
+4. kubectl exec -ti $POD_NAME curl localhost:8080
+	- can confirm that the app is still running with a curl inside the pod. 
+	- We see here that the application is up. This is because the Deployment is managing the application. To shut down the application, you would need to delete the Deployment as well.
+
+
+Scaling an App
+--------------
+
+Step 1: Scaling a deployment
+
+1. kubectl get deployments
+	- To list your deployments.
+
+2. kubectl get rs
+	- To see the ReplicaSet created by the Deployment.
+
+3. kubectl scale deployments/kubernetes-bootcamp --replicas=4
+	- scale the Deployment to 4 replicas. We’ll use the kubectl scale command, followed by the deployment type, name and desired number of instances.
+
+4. kubectl get deployments
+	- To list your Deployments once again.The change was applied, and we have 4 instances of the application available.
+
+5. kubectl get pods -o wide
+	- To check if the number of Pods changed.can also view in the output of this command that there are 4 replicas now.
+
+Step 2: Load Balancing
+
+1. kubectl describe services/kubernetes-bootcamp
+	- check that the Service is load-balancing the traffic. To find out the exposed IP and Port we can use the describe service as we learned in the previously Module.
+
+2. export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+echo NODE_PORT=$NODE_PORT
+
+	- Create an environment variable called NODE_PORT that has a value as the Node port.
+
+3. curl $(minikube ip):$NODE_PORT
+	- do a curl to the exposed IP and port. Execute the command multiple times.
+	- hit a different Pod with every request. This demonstrates that the load-balancing is working.
+
+Step 3: Scale Down
+
+1. kubectl scale deployments/kubernetes-bootcamp --replicas=2
+	- To scale down the Service to 2 replicas, run again the scale command.
+
+2. kubectl get deployments
+	- List the Deployments to check if the change was applied.
+
+3. kubectl get pods -o wide
+	- The number of replicas decreased to 2. List the number of Pods.
+
+
+Updating an app:
+
+Rolling Update.
+
+Step 1: Update the version of the app
+
+1. kubectl get deployments
+	- To list your deployments
+
+2. kubectl get pods
+	- To list the running Pods.
+
+3. kubectl describe pods
+	- To view the current image version of the app.
+
+4. kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2
+	- To update the image of the application to version 2, use the set image command, followed by the deployment name and the new image version.
+	- The command notified the Deployment to use a different image for your app and initiated a rolling update.
+
+5. kubectl get pods
+	- Check the status of the new Pods, and view the old one terminating with the get pods command.
+
+
+Step 2: Verify an update
+
+1. kubectl describe services/kubernetes-bootcamp
+	- To check that the App is running.
+
+2. export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+echo NODE_PORT=$NODE_PORT
+
+	- Create an environment variable called NODE_PORT that has the value of the Node port assigned.
+
+3. curl $(minikube ip):$NODE_PORT
+	- do a curl to the the exposed IP and port.
+
+4. kubectl rollout status deployments/kubernetes-bootcamp
+	- The update can be confirmed also by running a rollout status command.
+
+5. kubectl describe pods
+	- To view the current image version of the app.
+
+
+Step 3: Rollback an update
+
+1. kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+	- perform another update, and deploy image tagged as v10.
+
+2. kubectl get deployments
+	- To see the status of the deployment.
+
+3. kubectl get pods
+	- And something is wrong… We do not have the desired number of Pods available. List the Pods again.
+
+4. kubectl describe pods
+	- A describe command on the Pods should give more insights.
+	- There is no image called v10 in the repository. Let’s roll back to our previously working version.
+
+5. kubectl rollout undo deployments/kubernetes-bootcamp
+	-  roll back to our previously working version. We’ll use the rollout undo command.
+	- the rollout command reverted the deployment to the previous known state (v2 of the image). Updates are versioned and you can revert to any previously know state of a Deployment.
+
+6. kubectl get pods
+	- List again the Pods.
+
+7. kubectl describe pods
+	- Four Pods are running. Check again the image deployed on the them.
+	- We see that the deployment is using a stable version of the app (v2). The Rollback was successful.
+
+
+
+
+
+

@@ -1,0 +1,31 @@
+C:\ProgramData\Oracle\Java\javapath;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;
+C:\Program Files\Citrix\System32\;
+C:\Program Files\Citrix\ICAService\;C:\Program Files\Citrix\Virtual Desktop Agent\;
+D:\SW\curl-7.68.0-win64-mingw\curl-7.68.0-win64-mingw\bin;
+ C:\Program Files\Java\jdk1.8.0_161\bin;C:\Program Files\PuTTY\;
+ D:\apache-maven-3.6.3-bin\apache-maven-3.6.3\bin;
+ D:\SW\curl-7.68.0-win64-mingw\curl-7.68.0-win64-mingw\bin
+ 
+ 
+ 
+ 
+ minikube start --kubernetes-version="v1.10.0" --vm-driver="virtualbox" --show-libmachine-logs --alsologtostderr
+ 
+  minikube start --kubernetes-version="v1.10.0" --vm-driver="virtualbox" --alsologtostderr
+  
+ 1. minikube version
+  
+ 2. minikube start --kubernetes-version="v1.12.0" --vm-driver="virtualbox" --alsologtostderr
+  
+ 3. minikube status
+	E0512 07:49:54.289986     984 status.go:232] kubeconfig endpoint: extract IP: "minikube" does not appear in C:\Users\w2mservices220/.kube/config
+	minikube
+	type: Control Plane
+	host: Running
+	kubelet: Stopped
+	apiserver: Stopped
+	kubeconfig: Misconfigured
+	
+4. minikube update-context
+	* "minikube" context has been updated to point to 192.168.99.103:8443
+	

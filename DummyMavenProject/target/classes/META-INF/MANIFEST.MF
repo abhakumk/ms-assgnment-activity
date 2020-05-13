@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: DummyProject
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: w2mservices220
+Implementation-Vendor-Id: com.mv.dummy
+Build-Jdk: 1.8.0_161
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/DummyProject
+Created-By: Maven Integration for Eclipse
+
